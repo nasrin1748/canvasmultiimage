@@ -17,7 +17,7 @@
             font-size: 3rem;
             position: absolute;
         }
-        .select-colour{
+        .select-colour {
             height: 30px;
             width: 30px;
         }
@@ -106,15 +106,12 @@
             dot_flag = false,
             draggingImg = false,
             resizingImg = false,
-            imgX = 0,
-            imgY = 0,
-            imgWidth = 0,
-            imgHeight = 0,
-            imgCornerSize = 10;
+            imgCornerSize = 10,
+            images = [];
 
         var x = "black",
             y = 2;
-        var img;
+        var img, imgWidth, imgHeight, currentImageIndex = null;
 
         function init() {
             canvas = document.getElementById('can');
@@ -174,6 +171,7 @@
             var m = confirm("Want to clear");
             if (m) {
                 ctx.clearRect(0, 0, w, h);
+                images = [];
             }
         }
 
@@ -202,13 +200,21 @@
                 currX = clientX - canvas.getBoundingClientRect().left;
                 currY = clientY - canvas.getBoundingClientRect().top;
 
-                if (img && currX >= imgX && currX <= imgX + imgWidth && currY >= imgY && currY <= imgY + imgHeight) {
-                    if (currX >= imgX + imgWidth - imgCornerSize && currY >= imgY + imgHeight - imgCornerSize) {
-                        resizingImg = true;
-                    } else {
-                        draggingImg = true;
+                currentImageIndex = null;
+                for (let i = 0; i < images.length; i++) {
+                    if (currX >= images[i].x && currX <= images[i].x + images[i].width &&
+                        currY >= images[i].y && currY <= images[i].y + images[i].height) {
+                        currentImageIndex = i;
+                        if (currX >= images[i].x + images[i].width - imgCornerSize && currY >= images[i].y + images[i].height - imgCornerSize) {
+                            resizingImg = true;
+                        } else {
+                            draggingImg = true;
+                        }
+                        break;
                     }
-                } else {
+                }
+
+                if (currentImageIndex === null) {
                     flag = true;
                     dot_flag = true;
                     if (dot_flag) {
@@ -226,13 +232,15 @@
                 resizingImg = false;
             }
             if (res == 'move') {
-                if (resizingImg) {
-                    imgWidth = clientX - canvas.getBoundingClientRect().left - imgX;
-                    imgHeight = clientY - canvas.getBoundingClientRect().top - imgY;
+                if (resizingImg && currentImageIndex !== null) {
+                    let imgObj = images[currentImageIndex];
+                    imgObj.width = clientX - canvas.getBoundingClientRect().left - imgObj.x;
+                    imgObj.height = clientY - canvas.getBoundingClientRect().top - imgObj.y;
                     redrawCanvas();
-                } else if (draggingImg) {
-                    imgX = clientX - canvas.getBoundingClientRect().left - imgWidth / 2;
-                    imgY = clientY - canvas.getBoundingClientRect().top - imgHeight / 2;
+                } else if (draggingImg && currentImageIndex !== null) {
+                    let imgObj = images[currentImageIndex];
+                    imgObj.x = clientX - canvas.getBoundingClientRect().left - imgObj.width / 2;
+                    imgObj.y = clientY - canvas.getBoundingClientRect().top - imgObj.height / 2;
                     redrawCanvas();
                 } else if (flag) {
                     prevX = currX;
@@ -315,17 +323,23 @@
         function addImageToCanvas() {
             let preview = document.getElementById('preview');
             let scale = preview.width / imgWidth;
-            imgWidth = img.width * scale;
-            imgHeight = img.height * scale;
-            imgX = 0;
-            imgY = 0;
-            ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+            let newImg = {
+                img: img,
+                x: 0,
+                y: 0,
+                width: img.width * scale,
+                height: img.height * scale
+            };
+            images.push(newImg);
+            redrawCanvas();
             document.getElementById('preview-container').style.display = 'none';
         }
 
         function redrawCanvas() {
             ctx.clearRect(0, 0, w, h);
-            ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+            images.forEach(imgObj => {
+                ctx.drawImage(imgObj.img, imgObj.x, imgObj.y, imgObj.width, imgObj.height);
+            });
         }
     </script>
 </body>
