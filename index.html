@@ -1,334 +1,332 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas with Draggable Multiple Images</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-  <style>
-      canvas {
-          display: block;
-          margin: 0 auto;
-          background-color: black;
-      }
-      .selected::before {
-          content: 'x';
-          height: 30px;
-          width: 30px;
-          left: 18px;
-          top: -8px;
-          font-size: 3rem;
-          position: absolute;
-      }
-      .select-colour{
-          height: 30px;
-          width: 30px;
-      }
-      #drop-area {
-          border: 2px dashed #ccc;
-          border-radius: 20px;
-          width: 600px;
-          height: 100px;
-          line-height: 100px;
-          text-align: center;
-          margin: 10px auto;
-      }
-      #drop-area.highlight {
-          border-color: purple;
-      }
-      #preview-container {
-          display: none;
-          text-align: center;
-          margin-top: 20px;
-      }
-      #preview {
-          max-width: 100%;
-          max-height: 300px;
-          margin-bottom: 10px;
-      }
-  </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: black;
+        }
+        .selected::before {
+            content: 'x';
+            height: 30px;
+            width: 30px;
+            left: 18px;
+            top: -8px;
+            font-size: 3rem;
+            position: absolute;
+        }
+        .select-colour{
+            height: 30px;
+            width: 30px;
+        }
+        #drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 20px;
+            width: 600px;
+            height: 100px;
+            line-height: 100px;
+            text-align: center;
+            margin: 10px auto;
+        }
+        #drop-area.highlight {
+            border-color: purple;
+        }
+        #preview-container {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body onload="init()">
-  <div id="drop-area">
-      <p>Drop image here to add to canvas</p>
-  </div>
-  <div id="preview-container">
-      <p>Resize the image before adding to canvas:</p>
-      <input type="range" id="resize-slider" min="1" max="100" value="100" oninput="resizeImage()">
-      <br>
-      <img id="preview">
-      <br>
-      <button class="btn btn-primary" onclick="addImageToCanvas()">Add to Canvas</button>
-  </div>
-  <div style="">
-      <div style="float: left;">
-          <canvas id="can" width="600" height="500" style="border:5px solid;"></canvas>
-      </div>
-      <div style="margin-left:20px; float:left;">
-          <div class="row">
-              <div class="col-12">Choose Color</div>
-              <div class="col-2 pt-3">
-                  <div class="select-colour" style="background:green;" id="green" onclick="color(this)"></div>
-              </div>
-              <div class="col-2 pt-3">
-                  <div class="select-colour" style="background:blue;" id="blue" onclick="color(this)"></div>
-              </div>
-              <div class="col-2 pt-3">
-                  <div class="select-colour" style="background:red;" id="red" onclick="color(this)"></div>
-              </div>
-              <div class="col-2 pt-3">
-                  <div class="select-colour" style="background:yellow;" id="yellow" onclick="color(this)"></div>
-              </div>
-              <div class="col-2 pt-3">
-                  <div class="select-colour" style="background:orange;" id="orange" onclick="color(this)"></div>
-              </div>
-              <div class="col-2 pt-3">
-                  <div class="select-colour" style="background:black;" id="black" onclick="color(this)"></div>
-              </div>
-              <div class="col-12 pt-3 pb-3" style="">Eraser</div>
-              <div class="col-2 pt-3">
-                  <div class="select-colour" style="background:white;border:2px solid;" id="white" onclick="color(this)"></div>
-              </div>
-          </div>
-          <div class="row">
-              <div class="col-6 col-lg-12 mt-3">
-                  <input type="button" value="Download" id="download" size="23" onclick="download()" class="btn btn-primary">
-              </div>
-              <div class="col-6 col-lg-12 mt-3">
-                  <input type="button" value="clear" id="clr" size="23" onclick="erase()" class="btn btn-light">
-              </div>
-          </div>
-      </div>
-  </div>
-  <script type="text/javascript">
-      var canvas, ctx, flag = false,
-          prevX = 0,
-          currX = 0,
-          prevY = 0,
-          currY = 0,
-          dot_flag = false,
-          draggingImg = false,
-          selectedImg = null;
+    <div id="drop-area">
+        <p>Drop image here to add to canvas</p>
+    </div>
+    <div id="preview-container">
+        <p>Resize the image before adding to canvas:</p>
+        <input type="range" id="resize-slider" min="1" max="100" value="100" oninput="resizeImage()">
+        <br>
+        <img id="preview">
+        <br>
+        <button class="btn btn-primary" onclick="addImageToCanvas()">Add to Canvas</button>
+    </div>
+    <div style="">
+        <div style="float: left;">
+            <canvas id="can" width="600" height="500" style="border:5px solid;"></canvas>
+        </div>
+        <div style="margin-left:20px; float:left;">
+            <div class="row">
+                <div class="col-12">Choose Color</div>
+                <div class="col-2 pt-3">
+                    <div class="select-colour" style="background:green;" id="green" onclick="color(this)"></div>
+                </div>
+                <div class="col-2 pt-3">
+                    <div class="select-colour" style="background:blue;" id="blue" onclick="color(this)"></div>
+                </div>
+                <div class="col-2 pt-3">
+                    <div class="select-colour" style="background:red;" id="red" onclick="color(this)"></div>
+                </div>
+                <div class="col-2 pt-3">
+                    <div class="select-colour" style="background:yellow;" id="yellow" onclick="color(this)"></div>
+                </div>
+                <div class="col-2 pt-3">
+                    <div class="select-colour" style="background:orange;" id="orange" onclick="color(this)"></div>
+                </div>
+                <div class="col-2 pt-3">
+                    <div class="select-colour" style="background:black;" id="black" onclick="color(this)"></div>
+                </div>
+                <div class="col-12 pt-3 pb-3" style="">Eraser</div>
+                <div class="col-2 pt-3">
+                    <div class="select-colour" style="background:white;border:2px solid;" id="white" onclick="color(this)"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-lg-12 mt-3">
+                    <input type="button" value="Download" id="download" size="23" onclick="download()" class="btn btn-primary">
+                </div>
+                <div class="col-6 col-lg-12 mt-3">
+                    <input type="button" value="clear" id="clr" size="23" onclick="erase()" class="btn btn-light">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var canvas, ctx, flag = false,
+            prevX = 0,
+            currX = 0,
+            prevY = 0,
+            currY = 0,
+            dot_flag = false,
+            draggingImg = false,
+            resizingImg = false,
+            imgX = 0,
+            imgY = 0,
+            imgWidth = 0,
+            imgHeight = 0,
+            imgCornerSize = 10;
 
-      var x = "black",
-          y = 2;
+        var x = "black",
+            y = 2;
+        var img;
 
-      var images = [];
+        function init() {
+            canvas = document.getElementById('can');
+            ctx = canvas.getContext("2d");
+            w = canvas.width;
+            h = canvas.height;
 
-      function init() {
-          canvas = document.getElementById('can');
-          ctx = canvas.getContext("2d");
-          w = canvas.width;
-          h = canvas.height;
+            canvas.addEventListener("mousemove", function (e) {
+                findxy('move', e, '')
+            }, false);
+            canvas.addEventListener("mousedown", function (e) {
+                findxy('down', e, '')
+            }, false);
+            canvas.addEventListener("mouseup", function (e) {
+                findxy('up', e, '')
+            }, false);
+            canvas.addEventListener("mouseout", function (e) {
+                findxy('out', e, '')
+            }, false);
 
-          canvas.addEventListener("mousemove", function (e) {
-              findxy('move', e, '')
-          }, false);
-          canvas.addEventListener("mousedown", function (e) {
-              findxy('down', e, '')
-          }, false);
-          canvas.addEventListener("mouseup", function (e) {
-              findxy('up', e, '')
-          }, false);
-          canvas.addEventListener("mouseout", function (e) {
-              findxy('out', e, '')
-          }, false);
+            canvas.addEventListener("touchmove", function (e) {
+                findxy('move', e, 'touch')
+            }, false);
+            canvas.addEventListener("touchstart", function (e) {
+                findxy('down', e, 'touch')
+            }, false);
+            canvas.addEventListener("touchend", function (e) {
+                findxy('up', e, 'touch')
+            }, false);
 
-          canvas.addEventListener("touchmove", function (e) {
-              findxy('move', e, 'touch')
-          }, false);
-          canvas.addEventListener("touchstart", function (e) {
-              findxy('down', e, 'touch')
-          }, false);
-          canvas.addEventListener("touchend", function (e) {
-              findxy('up', e, 'touch')
-          }, false);
+            initDropArea();
+        }
 
-          initDropArea();
-      }
+        function color(obj) {
+            x = obj.id;
+            if (x == "white") y = 14;
+            else y = 2;
+            var prevSelected = document.getElementsByClassName("selected");
+            // If it exists, remove it.
+            if(prevSelected.length > 0) {
+                prevSelected[0].classList.remove("selected");
+            }
+            document.getElementById(obj.id).classList.add("selected");
+        }
 
-      function color(obj) {
-          x = obj.id;
-          if (x == "white") y = 14;
-          else y = 2;
-          var prevSelected = document.getElementsByClassName("selected");
-          // If it exists, remove it.
-          if(prevSelected.length > 0) {
-              prevSelected[0].classList.remove("selected");
-          }
-          document.getElementById(obj.id).classList.add("selected");
-      }
+        function draw() {
+            ctx.beginPath();
+            ctx.moveTo(prevX, prevY);
+            ctx.lineTo(currX, currY);
+            ctx.strokeStyle = x;
+            ctx.lineWidth = y;
+            ctx.stroke();
+            ctx.closePath();
+        }
 
-      function draw() {
-          ctx.beginPath();
-          ctx.moveTo(prevX, prevY);
-          ctx.lineTo(currX, currY);
-          ctx.strokeStyle = x;
-          ctx.lineWidth = y;
-          ctx.stroke();
-          ctx.closePath();
-      }
+        function erase() {
+            var m = confirm("Want to clear");
+            if (m) {
+                ctx.clearRect(0, 0, w, h);
+            }
+        }
 
-      function erase() {
-          var m = confirm("Want to clear");
-          if (m) {
-              ctx.clearRect(0, 0, w, h);
-              images = [];
-          }
-      }
+        function download() {
+            var link = document.createElement('a');
+            var dataURL = canvas.toDataURL();
+            link.href = dataURL;
+            link.download = 'mydrawing.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
-      function download() {
-          var link = document.createElement('a');
-          var dataURL = canvas.toDataURL();
-          link.href = dataURL;
-          link.download = 'mydrawing.png';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-      }
+        function findxy(res, e, source) {
+            if(source){
+                var clientX = e.changedTouches[0].clientX;
+                var clientY = e.changedTouches[0].clientY;
+            }else{
+                var clientX = e.clientX;
+                var clientY = e.clientY;
+            }
 
-      function findxy(res, e, source) {
-          if(source){
-              var clientX = e.changedTouches[0].clientX;
-              var clientY = e.changedTouches[0].clientY;
-          }else{
-              var clientX = e.clientX;
-              var clientY = e.clientY;
-          }
+            if (res == 'down') {
+                prevX = currX;
+                prevY = currY;
+                currX = clientX - canvas.getBoundingClientRect().left;
+                currY = clientY - canvas.getBoundingClientRect().top;
 
-          if (res == 'down') {
-              prevX = currX;
-              prevY = currY;
-              currX = clientX - canvas.getBoundingClientRect().left;
-              currY = clientY - canvas.getBoundingClientRect().top;
+                if (img && currX >= imgX && currX <= imgX + imgWidth && currY >= imgY && currY <= imgY + imgHeight) {
+                    if (currX >= imgX + imgWidth - imgCornerSize && currY >= imgY + imgHeight - imgCornerSize) {
+                        resizingImg = true;
+                    } else {
+                        draggingImg = true;
+                    }
+                } else {
+                    flag = true;
+                    dot_flag = true;
+                    if (dot_flag) {
+                        ctx.beginPath();
+                        ctx.fillStyle = x;
+                        ctx.fillRect(currX, currY, 2, 2);
+                        ctx.closePath();
+                        dot_flag = false;
+                    }
+                }
+            }
+            if (res == 'up' || res == "out") {
+                flag = false;
+                draggingImg = false;
+                resizingImg = false;
+            }
+            if (res == 'move') {
+                if (resizingImg) {
+                    imgWidth = clientX - canvas.getBoundingClientRect().left - imgX;
+                    imgHeight = clientY - canvas.getBoundingClientRect().top - imgY;
+                    redrawCanvas();
+                } else if (draggingImg) {
+                    imgX = clientX - canvas.getBoundingClientRect().left - imgWidth / 2;
+                    imgY = clientY - canvas.getBoundingClientRect().top - imgHeight / 2;
+                    redrawCanvas();
+                } else if (flag) {
+                    prevX = currX;
+                    prevY = currY;
+                    currX = clientX - canvas.getBoundingClientRect().left;
+                    currY = clientY - canvas.getBoundingClientRect().top;
+                    draw();
+                }
+            }
+        }
 
-              selectedImg = null;
-              for (let img of images) {
-                  if (currX >= img.x && currX <= img.x + img.width && currY >= img.y && currY <= img.y + img.height) {
-                      draggingImg = true;
-                      selectedImg = img;
-                      break;
-                  }
-              }
+        function initDropArea() {
+            let dropArea = document.getElementById('drop-area');
 
-              if (!selectedImg) {
-                  flag = true;
-                  dot_flag = true;
-                  if (dot_flag) {
-                      ctx.beginPath();
-                      ctx.fillStyle = x;
-                      ctx.fillRect(currX, currY, 2, 2);
-                      ctx.closePath();
-                      dot_flag = false;
-                  }
-              }
-          }
-          if (res == 'up' || res == "out") {
-              flag = false;
-              draggingImg = false;
-          }
-          if (res == 'move') {
-              if (draggingImg && selectedImg) {
-                  selectedImg.x = clientX - canvas.getBoundingClientRect().left - selectedImg.width / 2;
-                  selectedImg.y = clientY - canvas.getBoundingClientRect().top - selectedImg.height / 2;
-                  redrawCanvas();
-              } else if (flag) {
-                  prevX = currX;
-                  prevY = currY;
-                  currX = clientX - canvas.getBoundingClientRect().left;
-                  currY = clientY - canvas.getBoundingClientRect().top;
-                  draw();
-              }
-          }
-      }
+            ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false)
+            });
 
-      function initDropArea() {
-          let dropArea = document.getElementById('drop-area');
+            ;['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false)
+            });
 
-          ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-              dropArea.addEventListener(eventName, preventDefaults, false)
-          });
+            ;['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false)
+            });
 
-          ;['dragenter', 'dragover'].forEach(eventName => {
-              dropArea.addEventListener(eventName, highlight, false)
-          });
+            dropArea.addEventListener('drop', handleDrop, false);
+        }
 
-          ;['dragleave', 'drop'].forEach(eventName => {
-              dropArea.addEventListener(eventName, unhighlight, false)
-          });
+        function preventDefaults (e) {
+            e.preventDefault()
+            e.stopPropagation()
+        }
 
-          dropArea.addEventListener('drop', handleDrop, false);
-      }
+        function highlight(e) {
+            let dropArea = document.getElementById('drop-area');
+            dropArea.classList.add('highlight')
+        }
 
-      function preventDefaults (e) {
-          e.preventDefault()
-          e.stopPropagation()
-      }
+        function unhighlight(e) {
+            let dropArea = document.getElementById('drop-area');
+            dropArea.classList.remove('highlight')
+        }
 
-      function highlight(e) {
-          let dropArea = document.getElementById('drop-area');
-          dropArea.classList.add('highlight')
-      }
+        function handleDrop(e) {
+            let dt = e.dataTransfer
+            let files = dt.files
 
-      function unhighlight(e) {
-          let dropArea = document.getElementById('drop-area');
-          dropArea.classList.remove('highlight')
-      }
+            handleFiles(files)
+        }
 
-      function handleDrop(e) {
-          let dt = e.dataTransfer
-          let files = dt.files
+        function handleFiles(files) {
+            ([...files]).forEach(previewFile)
+        }
 
-          handleFiles(files)
-      }
+        function previewFile(file) {
+            let reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.onloadend = function() {
+                img = new Image();
+                img.src = reader.result;
+                img.onload = function() {
+                    imgWidth = img.width;
+                    imgHeight = img.height;
+                    let preview = document.getElementById('preview');
+                    preview.src = img.src;
+                    document.getElementById('preview-container').style.display = 'block';
+                }
+            }
+        }
 
-      function handleFiles(files) {
-          ([...files]).forEach(previewFile)
-      }
+        function resizeImage() {
+            let slider = document.getElementById('resize-slider');
+            let preview = document.getElementById('preview');
+            let scale = slider.value / 100;
+            preview.width = imgWidth * scale;
+            preview.height = imgHeight * scale;
+        }
 
-      function previewFile(file) {
-          let reader = new FileReader()
-          reader.readAsDataURL(file)
-          reader.onloadend = function() {
-              let img = new Image();
-              img.src = reader.result;
-              img.onload = function() {
-                  img.width = img.width;
-                  img.height = img.height;
-                  let preview = document.getElementById('preview');
-                  preview.src = img.src;
-                  document.getElementById('preview-container').style.display = 'block';
-                  images.push({ img: img, x: 0, y: 0, width: img.width, height: img.height });
-              }
-          }
-      }
+        function addImageToCanvas() {
+            let preview = document.getElementById('preview');
+            let scale = preview.width / imgWidth;
+            imgWidth = img.width * scale;
+            imgHeight = img.height * scale;
+            imgX = 0;
+            imgY = 0;
+            ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+            document.getElementById('preview-container').style.display = 'none';
+        }
 
-      function resizeImage() {
-          let slider = document.getElementById('resize-slider');
-          let preview = document.getElementById('preview');
-          let scale = slider.value / 100;
-          preview.width = img.width * scale;
-          preview.height = img.height * scale;
-      }
-
-      function addImageToCanvas() {
-          let preview = document.getElementById('preview');
-          let scale = preview.width / img.width;
-          img.width = img.width * scale;
-          img.height = img.height * scale;
-          images[images.length - 1].width = img.width;
-          images[images.length - 1].height = img.height;
-          ctx.drawImage(img, 0, 0, img.width, img.height);
-          document.getElementById('preview-container').style.display = 'none';
-          redrawCanvas();
-      }
-
-      function redrawCanvas() {
-          ctx.clearRect(0, 0, w, h);
-          for (let img of images) {
-              ctx.drawImage(img.img, img.x, img.y, img.width, img.height);
-          }
-      }
-  </script>
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, w, h);
+            ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+        }
+    </script>
 </body>
 </html>
